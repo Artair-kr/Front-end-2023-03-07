@@ -4,53 +4,84 @@
     font-family: 'Pretendard';
     src: url(C:\Users\user\Documents\HSJ\memories-front\src\assets\fonts\Pretendard.ttf);
   }
-  
-  :root {
-    --White: rgba(255, 255,  255, 1);
-    --Lightmode-Grey: rgba(64, 64, 64, 1);
-    --Lightmode-Grey2: rgba(138, 146, 166, 1);
-    --Lightmode-Grey3: rgba(238, 238, 238, 1);
-    --Primary: rgba(0, 132, 255, 1);
-    --Second: rgba(0, 132, 255, 0.10);
-    --Error: rgba(255, 84, 64, 1);
-  }
-  
-  body {
-    font-family: 'Pretendard';
-  }
 
-  .button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
 
-    border-radius: 6px;
-    width: 92px;
-    height: 44px;
+:root {
+  --White: rgba(255, 255, 255, 1);
+  --Lightmode-Grey: rgba(64, 64, 64, 1);
+  --Lightmode-Grey2: rgba(138, 146, 166, 1);
+  --Lightmode-Grey3: rgba(238, 238, 238, 1);
+  --Lightmode-Grey4: rgba(113, 113, 113, 1);
+  --Primary: rgba(0, 132, 255, 1);
+  --Second: rgba(0, 132, 255, 0.10);
+  --Error: rgba(255, 84, 64, 1);
+}
 
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 175%;
+body {
+  font-family: 'Pretendard';
+}
 
-    cursor: pointer;
-  }
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  .button.disable {
-    background-color: var(--Lightmode-Grey3);
+  border-radius: 6px;
+  width: 92px;
+  height: 44px;
 
-    color: var(--Lightmode-Grey2);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 175%;
 
-    cursor: default;
-  }
+  cursor: pointer;
+}
 
-  .button.second {
-    background-color: var(--Second);
+.button:hover {
+  opacity: 0.85;
+}
 
-    color: var(--Primary);
-  }
+.button.fullwidth {
+  box-sizing: border-box;
+  width: 100%;
+}
 
-  .button.primary  {
-    background-color: var(--Primary);
+.button.disable {
+  background-color: var(--Lightmode-Grey3);
 
-    color: var(--White);
-  }
+  color: var(--Lightmode-Grey2);
+
+  cursor: default;
+}
+
+.button.disable:hover {
+  opacity: 1;
+}
+
+.button.second {
+  background-color: var(--Second);
+
+  color: var(--Primary);
+}
+
+.button.primary {
+  background-color: var(--Primary);
+
+  color: var(--White);
+}
+
+.link {
+  color: var(--Lightmode-Grey4);
+
+  text-align: center;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 175%;
+
+  cursor: pointer;
+}
+
+.link:hover {
+  color: var(--Lightmode-Grey);
+  font-weight: 600;
+}

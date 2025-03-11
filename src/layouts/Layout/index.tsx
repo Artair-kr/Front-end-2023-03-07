@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Outlet } from 'react-router'
+import { Outlet, useLocation } from 'react-router'
 
 // 스타일 적용
 import './style.css'
@@ -7,12 +7,21 @@ import './style.css'
 // component: 공통 레이아웃 컴포넌트 //
 export default function Layout() {
 
+  // state: 경로 상태 //
+  const { pathname } = useLocation();
+
   // state: My Content List 요소 참조 //
   // (null) : 초기에는 null값이 들어간다.
   const myContentListRef = useRef<HTMLDivElement | null>(null);
 
   // state: My Content 드롭다운 상태 //
   const [showMyContent, setShowMyContent] = useState<boolean>(false);
+
+  // variable: 기억력 검사 클래스 //
+  const memoryTestClass = pathname.startsWith('/memory-test') ? 'navigation-item active' : 'navigation-item';
+
+  // variable: 집중력 검사 클래스 //
+  const concentrationTestClass = pathname.startsWith('/concentration-test') ? 'navigation-item active' : 'navigation-item';
 
   // event handler: My Content 클릭 이벤트 처리 //
   const onMyContentClickHandler = () => {
@@ -42,8 +51,8 @@ export default function Layout() {
         <div className='navigation'>
           <div className='title'>Memories</div>
           <div className='navigation-list'>
-            <div className='navigation-item active'>기억력 검사</div>
-            <div className='navigation-item'>집중력 검사</div>
+            <div className={memoryTestClass}>기억력 검사</div>
+            <div className={concentrationTestClass}>집중력 검사</div>
           </div>
         </div>
         <div className='my-content' onClick={onMyContentClickHandler}>

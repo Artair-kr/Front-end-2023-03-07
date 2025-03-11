@@ -1,6 +1,6 @@
 #layout-wrapper {
     background-color: var(--Beige);
-    width: 1400px;
+    min-width: 1440px;
     min-height: 1000px;
 }
   

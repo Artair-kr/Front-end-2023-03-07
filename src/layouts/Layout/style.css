@@ -1,5 +1,6 @@
 #layout-wrapper {
     background-color: var(--Beige);
+    width: 1400px;
     min-height: 1000px;
 }
   
@@ -19,7 +20,7 @@
     align-items: center;
     gap: 40px;
 }
-  
+
 #top-bar .navigation>.title {
     color: var(--Lightmode-Grey);
   
@@ -90,7 +91,15 @@
     font-weight: 400;
     line-height: 175%;
 }
+
+#top-bar .my-content-item:hover {
+    font-weight: 700;
+}
   
 #top-bar .my-content-item:first-child {
     border-bottom: 1px solid var(--Lightmode-Grey3);
+}
+
+#main{
+    padding: 40px 130px 80px;
 }

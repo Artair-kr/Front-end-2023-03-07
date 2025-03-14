@@ -4,6 +4,12 @@ import { Address, useDaumPostcodePopup } from 'react-daum-postcode';
 import './style.css';
 import { AuthPage } from '../../../types/aliases';
 import InputBox from '../../../components/InputBox';
+import { idCheckRequestDto } from '../../../apis/dto/request/auth';
+import { idCheckRequest } from '../../../apis';
+import { ResponseDto } from '../../../apis/dto/response';
+
+
+
 
 
 // interface: 회원가입 컴포넌트 속성 //
@@ -69,6 +75,27 @@ export default function SignUp(props: Props) {
     setUserAddressMessage('');
   };
 
+  // function: id check response 처리 함수 //
+  const idCheckResponse = (responseBody: ResponseDto | null) => { 
+    //? 타입 반환이 명확하게 되어있지 않아 정확하게 명시 하도록 한다.
+
+    const message = 
+      // responseBody === null 또는 !responseBody
+      !responseBody ? '서버에 문제가 있습니다.' :
+      responseBody.code === 'DBE' ? '서버에 문제가 있습니다' :
+      responseBody.code === 'EU' ? '이미 사용중인 아이디입니다' :
+      responseBody.code === 'VF' ? '아이디를 입력하세요' :
+      '사용 가능한 아이디입니다.';
+
+      console.log(responseBody && responseBody.message);
+
+    const isSuccess = responseBody !== null && responseBody.code === 'SU';
+
+    setUserIdMessage(message);
+    setUserIdMessageError(!isSuccess);
+    setUserIdChecked(isSuccess);
+  };
+
   // event handler: 사용자 이름 변경 이벤트 처리 //
   const onUserNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -121,13 +148,13 @@ export default function SignUp(props: Props) {
   const onCheckUserIdClickHandler = () => {
     if (!isUserIdCheckButtonActive) return;
     
-    const idList = ['qwer1234', 'rewq4321', 'poiu0987'];
-    const isExist = idList.includes(userId);
-    
-    const message = isExist ? '이미 사용중인 아이디입니다.' : '사용 가능한 아이디입니다.';
-    setUserIdMessage(message);
-    setUserIdMessageError(isExist);
-    setUserIdChecked(!isExist);
+    const requestBody: idCheckRequestDto = { userId };
+    idCheckRequest(requestBody).then(idCheckResponse);
+
+    // const message = isExist ? '이미 사용중인 아이디입니다.' : '사용 가능한 아이디입니다.';
+    // setUserIdMessage(message);
+    // setUserIdMessageError(isExist);
+    // setUserIdChecked(!isExist);  
   };
 
   // event handler: 주소 검색 버튼 클릭 이벤트 처리 //

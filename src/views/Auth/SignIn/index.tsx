@@ -1,14 +1,19 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
+
+
+
 import './style.css';
-import InputBox from '../../../components/InputBox';
-import { AuthPage } from '../../../types/aliases';
-import { signInRequest } from '../../../apis';
-import { SignInRequestDto } from '../../../apis/dto/request/auth';
-import { ResponseDto } from '../../../apis/dto/response';
 import { useNavigate } from 'react-router';
-import SignInResponseDto from '../../../apis/dto/response/auth/sign-in.response.dto';
+import { AuthPage } from '../../../types/aliases';
+import { SignInResponseDto } from '../../../apis/dto/response/auth';
+import { ResponseDto } from '../../../apis/dto/response';
 import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH, ROOT_PATH } from '../../../constants';
+import { SignInRequestDto } from '../../../apis/dto/request/auth';
+import { signInRequest } from '../../../apis';
+import InputBox from '../../../components/InputBox';
+
+
 
 // interface: 로그인 컴포넌트 속성 //
 interface Props {
@@ -21,8 +26,6 @@ export default function SignIn(props: Props) {
   const { onPageChange } = props;
 
   // state: cookie 상태 //
-  // 배열에서 앞에 값을 쓰지 않아도 들고 와야한다.
-  // _ 로 가져온다면 사용하지 않겠다는 의미이다.
   const [_, setCookie] = useCookies();
 
   // state: 유저 아이디 상태 //
@@ -34,7 +37,7 @@ export default function SignIn(props: Props) {
   // state: 유저 비밀번호 메세지 상태 //
   const [userPasswordMessage, setUserPasswordMessage] = useState<string>('');
 
-  // function: 네이게이터 함수 //
+  // function: 네비게이터 함수 //
   const navigator = useNavigate();
 
   // function: sign in response 처리 함수 //
@@ -43,21 +46,18 @@ export default function SignIn(props: Props) {
       !responseBody ? '서버에 문제가 있습니다' :
       responseBody.code === 'DBE' ? '서버에 문제가 있습니다' :
       responseBody.code === 'SF' ? '로그인 정보가 일치하지 않습니다' : '';
-      
-      const isSuccess = responseBody !== null && responseBody.code === 'SU';
-      if (!isSuccess){
-        setUserPasswordMessage(message);
-        return;
-      }
 
-      const { accessToken, expiration }  = responseBody as SignInResponseDto;
-      // 만료 날짜
-      const expires = new Date(Date.now() + (expiration * 1000));
-      // root 권한, 만료기간
-      setCookie(ACCESS_TOKEN, accessToken, { path: ROOT_PATH, expires });
+    const isSuccess = responseBody !== null && responseBody.code === 'SU';
+    if (!isSuccess) {
+      setUserPasswordMessage(message);
+      return;
+    }
 
-      navigator(MAIN_ABSOLUTE_PATH);
+    const { accessToken, expiration } = responseBody as SignInResponseDto;
+    const expires = new Date(Date.now() + (expiration * 1000));
+    setCookie(ACCESS_TOKEN, accessToken, { path: ROOT_PATH, expires });
 
+    navigator(MAIN_ABSOLUTE_PATH);
   };
 
   // event handler: 유저 아이디 변경 이벤트 처리 //
@@ -82,7 +82,11 @@ export default function SignIn(props: Props) {
       userId, userPassword
     }
     signInRequest(requestBody).then(signInResponse);
+  };
 
+  // event handler: sns 로그인 버튼 클릭 이벤트 처리 //
+  const onSnsButtonClickHandler = (sns: 'kakao' | 'naver') => {
+    window.location.href = `http://localhost:4000/api/v1/auth/sns/${sns}`;
   };
 
   // effect: 아이디 혹은 비밀번호 변경시 실행할 함수 //
@@ -110,8 +114,8 @@ export default function SignIn(props: Props) {
       <div className='sns-container'>
         <div className='sns-header'>SNS 로그인</div>
         <div className='sns-button-box'>
-          <div className='sns-button kakao'></div>
-          <div className='sns-button naver'></div>
+          <div className='sns-button kakao' onClick={() => onSnsButtonClickHandler('kakao')}></div>
+          <div className='sns-button naver' onClick={() => onSnsButtonClickHandler('naver')}></div>
         </div>
       </div>
     </div>

@@ -1,15 +1,13 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { Address, useDaumPostcodePopup } from 'react-daum-postcode';
-
 import './style.css';
-import { AuthPage } from '../../../types/aliases';
+import { AuthPage, JoinType } from '../../../types/aliases';
 import InputBox from '../../../components/InputBox';
 import { IdCheckRequestDto,  SignUpRequestDto } from '../../../apis/dto/request/auth';
 import { idCheckRequest, signUpRequest } from '../../../apis';
 import { ResponseDto } from '../../../apis/dto/response';
-
-
-
+import { useCookies } from 'react-cookie';
+import { JOIN_TYPE, ROOT_PATH, SNS_ID } from '../../../constants';
 
 
 // interface: 회원가입 컴포넌트 속성 //
@@ -21,6 +19,9 @@ interface Props {
 export default function SignUp(props: Props) {
 
   const { onPageChange } = props;
+
+  // state: cookie 상태 //
+  const [cookies, _, removeCookie] = useCookies();
 
   // state: 사용자 이름 상태 //
   const [userName, setUserName] = useState<string>('');
@@ -55,6 +56,11 @@ export default function SignUp(props: Props) {
   const [isUserPasswordChecked, setUserPasswordChecked] = useState<boolean>(false);
   // state: 사용자 비밀번호 동일 여부 상태 //
   const [isUserPasswordEqual, setUserPasswordEqual] = useState<boolean>(false);
+
+  // state: 가입 경로 상태 //
+  const [joinType, setJoinType] = useState<JoinType>('NORMAL');
+  // state: SNS ID 상태 //
+  const [snsId, setSnsId] = useState<string | undefined>(undefined);
   
   // variable: 중복 확인 버튼 활성화 //
   const isUserIdCheckButtonActive = userId !== '';
@@ -64,6 +70,8 @@ export default function SignUp(props: Props) {
     isUserIdChecked && isUserPasswordChecked && isUserPasswordEqual;
   // variable: 회원가입 버튼 클래스 //
   const signUpButtonClass = `button ${isSignUpButtonActive ? 'primary' : 'disable'} fullwidth`;
+  // variable: SNS 회원가입 여부 //
+  const isSns = joinType !== 'NORMAL' && snsId !== undefined;
 
   // function: 다음 포스트 코드 팝업 오픈 함수 //
   const open = useDaumPostcodePopup();
@@ -76,18 +84,13 @@ export default function SignUp(props: Props) {
   };
 
   // function: id check response 처리 함수 //
-  const idCheckResponse = (responseBody: ResponseDto | null) => { 
-    //? 타입 반환이 명확하게 되어있지 않아 정확하게 명시 하도록 한다.
-
+  const idCheckResponse = (responseBody: ResponseDto | null) => {
     const message = 
-      // responseBody === null 또는 !responseBody
-      !responseBody ? '서버에 문제가 있습니다.' :
+      !responseBody ? '서버에 문제가 있습니다' :
       responseBody.code === 'DBE' ? '서버에 문제가 있습니다' :
       responseBody.code === 'EU' ? '이미 사용중인 아이디입니다' :
       responseBody.code === 'VF' ? '아이디를 입력하세요' :
-      '사용 가능한 아이디입니다.';
-
-      console.log(responseBody && responseBody.message);
+        '사용 가능한 아이디입니다';
 
     const isSuccess = responseBody !== null && responseBody.code === 'SU';
 
@@ -99,25 +102,24 @@ export default function SignUp(props: Props) {
   // function: sign up response 처리 함수 //
   const signUpResponse = (responseBody: ResponseDto | null) => {
     const message = 
-      !responseBody ? '서버에 문제가 있습니다' : 
+      !responseBody ? '서버에 문제가 있습니다' :
       responseBody.code === 'DBE' ? '서버에 문제가 있습니다' :
       responseBody.code === 'EU' ? '이미 사용중인 아이디입니다' :
       responseBody.code === 'VF' ? '모두 입력해주세요' : '';
-
-      const isSuccess = responseBody !== null && responseBody.code === 'SU';
-      if(!isSuccess){
-        if(responseBody && responseBody.code === 'EU'){
-          setUserIdMessage(message);
-          setUserIdMessageError(true);
-          return;
-        }
-        alert(message);
+    
+    const isSuccess = responseBody !== null && responseBody.code === 'SU';
+    if (!isSuccess) {
+      if (responseBody && responseBody.code === 'EU') {
+        setUserIdMessage(message);
+        setUserIdMessageError(true);
         return;
       }
-      // 성공시 로그인 페이지로 이동
-      onPageChange('sign-in');
-  };
+      alert(message);
+      return;
+    }
 
+    onPageChange('sign-in');
+  };
 
   // event handler: 사용자 이름 변경 이벤트 처리 //
   const onUserNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -173,16 +175,16 @@ export default function SignUp(props: Props) {
     
     const requestBody: IdCheckRequestDto = { userId };
     idCheckRequest(requestBody).then(idCheckResponse);
-
-    // const message = isExist ? '이미 사용중인 아이디입니다.' : '사용 가능한 아이디입니다.';
-    // setUserIdMessage(message);
-    // setUserIdMessageError(isExist);
-    // setUserIdChecked(!isExist);  
   };
 
   // event handler: 주소 검색 버튼 클릭 이벤트 처리 //
   const onSearchAddressClickHandler = () => {
     open({ onComplete: daumPostCompleteHandler });
+  };
+
+  // event handler: sns 로그인 버튼 클릭 이벤트 처리 //
+  const onSnsButtonClickHandler = (sns: 'kakao' | 'naver') => {
+    window.location.href = `http://localhost:4000/api/v1/auth/sns/${sns}`;
   };
 
   // event handler: 회원가입 버튼 클릭 이벤트 처리 //
@@ -197,12 +199,20 @@ export default function SignUp(props: Props) {
     if (!isSignUpButtonActive) return;
 
     const requestBody: SignUpRequestDto = {
-      userId, userPassword, name:userName,
-      address: userAddress, detailAddress: userDetailAddress,
-      joinType: 'NORMAL'
+      userId, userPassword, name: userName, 
+      address: userAddress, detailAddress: userDetailAddress, joinType, snsId
     };
     signUpRequest(requestBody).then(signUpResponse);
   };
+
+  // effect: 컴포넌트 로드시 실행할 함수 //
+  useEffect(() => {
+    if (cookies[JOIN_TYPE]) setJoinType(cookies[JOIN_TYPE]);
+    if (cookies[SNS_ID]) setSnsId(cookies[SNS_ID]);
+
+    removeCookie(JOIN_TYPE, { path: ROOT_PATH });
+    removeCookie(SNS_ID, { path: ROOT_PATH });
+  }, []);
 
   // effect: 사용자 비밀번호 또는 사용자 비밀번호 확인이 변경될시 실행할 함수 //
   useEffect(() => {
@@ -216,13 +226,15 @@ export default function SignUp(props: Props) {
   return (
     <div id='auth-sign-up-container'>
       <div className='header'>Memories</div>
+      {!isSns &&
       <div className='sns-container'>
         <div className='sns-header'>SNS 회원가입</div>
         <div className='sns-button-box'>
-          <div className='sns-button kakao'></div>
-          <div className='sns-button naver'></div>
+          <div className='sns-button kakao' onClick={() => onSnsButtonClickHandler('kakao')}></div>
+          <div className='sns-button naver' onClick={() => onSnsButtonClickHandler('naver')}></div>
         </div>
       </div>
+      }
       <div className='divider'></div>
       <div className='input-container'>
 

@@ -1,5 +1,5 @@
-import SignInRequestDto from "./sign-in.request.dto";
+import SignInResponseDto from './sign-in.response.dto';
 
 export type {
-    SignInRequestDto
+  SignInResponseDto
 }

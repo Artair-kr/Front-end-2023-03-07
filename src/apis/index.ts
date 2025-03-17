@@ -1,8 +1,8 @@
-import { IdCheckRequestDto, SignUpRequestDto } from "./dto/request/auth";
+import { IdCheckRequestDto, SignInRequestDto, SignUpRequestDto } from "./dto/request/auth";
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { ResponseDto } from "./dto/response";
-import { SignInRequestDto } from "./dto/response/auth";
+import { SignInResponseDto } from "./dto/response/auth";
 
 // variable: URL 상수 //
 const API_DOMAIN = process.env.REACT_APP_API_DOMAIN;
@@ -48,7 +48,7 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) => {
 // function: sign in API 요청 함수 //
 export const signInRequest = async (requestBody: SignInRequestDto) => {
     const responseBody = await axios.post(SIGN_IN_URL, requestBody)
-    .then(responseSuccessHandler<SignInRequestDto>)
+    .then(responseSuccessHandler<SignInResponseDto>)
     .catch(responseErrorHandler);
     return responseBody;
 };

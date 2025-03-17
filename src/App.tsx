@@ -1,10 +1,12 @@
-import React from 'react';
-import { Route, Routes } from 'react-router';
+import React, { useEffect } from 'react';
+import { Route, Routes, useNavigate } from 'react-router';
+import { useCookies } from 'react-cookie';
 
 import './App.css';
 import Layout from './layouts/Layout';
 import Auth from './views/Auth';
-import { AUTH_PATH, CONCENTRATION_TEST_COMPLETE_PATH, CONCENTRATION_TEST_PATH, DIARY_PATH, DIARY_UPDATE_PATH, DIARY_VIEW_PATH, DIARY_WRITE_PATH, MAIN_PATH, MEMORY_TEST_COMPLETE_PATH, MEMORY_TEST_PATH, OTHERS_PAHTH } from './constants';
+import { ACCESS_TOKEN, AUTH_ABSOLUTE_PATH, AUTH_PATH, CONCENTRATION_TEST_COMPLETE_PATH, CONCENTRATION_TEST_PATH, DIARY_PATH, DIARY_UPDATE_PATH, DIARY_VIEW_PATH, DIARY_WRITE_PATH,  MAIN_PATH, MEMORY_TEST_COMPLETE_PATH, MEMORY_TEST_PATH, OTHERS_PAHTH, ROOT_ABSOLUTE_PATH } from './constants';
+
 
 // Router 구성
 // - /auth : 로그인 및 회원가입 페이지
@@ -25,7 +27,7 @@ import { AUTH_PATH, CONCENTRATION_TEST_COMPLETE_PATH, CONCENTRATION_TEST_PATH, D
 function App() {
   return (
     <Routes>
-      <Route index element={<Index/>} />
+      {/* <Route index element={<Index/>} /> */}
       <Route path={AUTH_PATH} element={<Auth />} />
 
       <Route element={<Layout />}>
@@ -61,6 +63,29 @@ export default App;
 // component: Root 경로 컴포넌트 //
 function Index() {
 
+  // state: cookie 상태 //
+  // 로그인 상태 확인을 보기 위해 accessToken 을 확인해야하는데 이를 위해 cookie 상태를 확인한다. //
+  const [cookies] = useCookies();
+
+  // state: 경로 상태 //
+  // const { pathname } = useLocation();
+
+  // function: 네비게이터 함수 //
+  const navigator = useNavigate();
+  
+  // effect: 컴포넌트가 렌더링될 때 실행할 함수 //
+  useEffect(() => {
+    if(cookies[ACCESS_TOKEN]) navigator(AUTH_ABSOLUTE_PATH);
+    if(cookies[ACCESS_TOKEN]) navigator(MAIN_PATH);
+    
+    //   // 로그인 되어있다면 MAIN
+    //   navigator(MAIN_ABSOLUTE_PATH);
+    // } else {
+    //   // 로그인 상태가 아니라면 AUTH
+    //   navigator(AUTH_ABSOLUTE_PATH);
+    // }
+  }, []);
+
   // render: Root 경로 컴포넌트 렌더링 //
-  return <></>
+  return null;
 }

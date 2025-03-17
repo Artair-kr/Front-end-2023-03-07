@@ -1,10 +1,7 @@
-import signUpRequestDto from "./sign-up.request.dto";
-import idCheckRequestDto from "./id-check.request.dto";
+import SignUpRequestDto from "./sign-up.request.dto";
+import IdCheckRequestDto from "./id-check.request.dto";
 
 export type {
-    idCheckRequestDto
-}
-
-export type {
-    signUpRequestDto
+    IdCheckRequestDto,
+    SignUpRequestDto
 }

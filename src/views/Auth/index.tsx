@@ -12,7 +12,7 @@ import { AuthPage } from '../../types/aliases';
 export default function Auth() {
 
   // state: 페이지 상태 //
-  const [page, setPage] = useState<AuthPage>('sign-up');
+  const [page, setPage] = useState<AuthPage>('sign-in');
 
   // event handler: 페이지 변경 이벤트 처리 //
   const onPageChangeHandler = (page: AuthPage) => {

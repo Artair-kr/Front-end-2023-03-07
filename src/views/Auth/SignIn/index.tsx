@@ -8,6 +8,7 @@ import { SignInRequestDto } from '../../../apis/dto/request/auth';
 import { ResponseDto } from '../../../apis/dto/response';
 import { useNavigate } from 'react-router';
 import SignInResponseDto from '../../../apis/dto/response/auth/sign-in.response.dto';
+import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH, ROOT_PATH } from '../../../constants';
 
 // interface: 로그인 컴포넌트 속성 //
 interface Props {
@@ -53,9 +54,10 @@ export default function SignIn(props: Props) {
       // 만료 날짜
       const expires = new Date(Date.now() + (expiration * 1000));
       // root 권한, 만료기간
-      setCookie('accessToken', accessToken, { path: '/', expires });
+      setCookie(ACCESS_TOKEN, accessToken, { path: ROOT_PATH, expires });
 
-      navigator('/');
+      navigator(MAIN_ABSOLUTE_PATH);
+
   };
 
   // event handler: 유저 아이디 변경 이벤트 처리 //

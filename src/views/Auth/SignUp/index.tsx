@@ -71,7 +71,7 @@ export default function SignUp(props: Props) {
   // variable: 회원가입 버튼 클래스 //
   const signUpButtonClass = `button ${isSignUpButtonActive ? 'primary' : 'disable'} fullwidth`;
   // variable: SNS 회원가입 여부 //
-  const isSns = joinType !== 'NORMAL' && snsId !== undefined;
+  const isSns = cookies[JOIN_TYPE] !== undefined && cookies[SNS_ID] !== undefined;
 
   // function: 다음 포스트 코드 팝업 오픈 함수 //
   const open = useDaumPostcodePopup();
@@ -197,6 +197,9 @@ export default function SignUp(props: Props) {
       setUserIdMessageError(true);
     }
     if (!isSignUpButtonActive) return;
+
+    const joinType = cookies[JOIN_TYPE] || 'NORMAL'; 
+    const snsId = cookies[SNS_ID];
 
     const requestBody: SignUpRequestDto = {
       userId, userPassword, name: userName, 

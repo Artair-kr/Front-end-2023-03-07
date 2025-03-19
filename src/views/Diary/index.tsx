@@ -3,7 +3,7 @@ import './style.css';
 import { useNavigate } from "react-router";
 import { DIARY_WRITE_ABSOLUTE_PATH } from "../../constants";
 import { Diary } from "../../types/interfaces";
-import { usePagination as usePaginations } from "../../hooks";
+import { usePagination } from "../../hooks";
 import Pagination from "../../components/pagination";
 
 // variable: 점보트론 컨텐츠 //
@@ -37,7 +37,7 @@ export default function DiaryMain() {
   const { 
     currentPage, setCurrentPage, currentSection, setCurrentSection,
     totalSection, setTotalList, viewList, pageList
-  } = usePaginations<Diary>();
+  } = usePagination<Diary>();
 
   // function: 네비게이터 함수 //
   const navigator = useNavigate();
@@ -327,7 +327,3 @@ const MOCK: Diary[] = [
     { writeDate: '2025-03-19', title: '57 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
     { writeDate: '2025-03-19', title: '58 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
   ]
-
-function usePagination(): { currentPage: any; setCurrentPage: any; currentSection: any; setCurrentSection: any; totalSection: any; setTotalList: any; viewList: any; pageList: any; } {
-    throw new Error("Function not implemented.");
-}

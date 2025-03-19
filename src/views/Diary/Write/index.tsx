@@ -1,10 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './style.css';
 import TextEditor from '../../../components/TextEditor';
 
 
 // component: 일기 작성 화면 컴포넌트 //
 export default function DiaryWrite() {
+
+  const [content, setContent] = useState<string>('');
+
+  const onContentChangeHandler = (content: string) => {
+    setContent(content);
+  };
 
   // render: 일기 작성 화면 컴포넌트 렌더링 //
   return (
@@ -58,7 +64,7 @@ export default function DiaryWrite() {
           </div>
           <div className='input-column-box'>
             <div className='title'>내용</div>
-            <TextEditor />
+            <TextEditor content={content} setContent={onContentChangeHandler} />
           </div>
         </div>
       </div>

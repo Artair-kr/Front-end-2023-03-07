@@ -3,115 +3,331 @@ import './style.css';
 import { useNavigate } from "react-router";
 import { DIARY_WRITE_ABSOLUTE_PATH } from "../../constants";
 import { Diary } from "../../types/interfaces";
+import { usePagination as usePaginations } from "../../hooks";
+import Pagination from "../../components/pagination";
 
 // variable: 점보트론 컨텐츠 //
-const JUMBOTRON_CONTENT = '일기 작성은 하루의 사건, 감정, 생각을 기록하여 단기 기억 능력 향상에 도움을 주며,\n장기 기억으로 변환하는데 도움을 줍니다.\n\n일기를 쓰는 행위자체가 주의를 기울이는 활동이므로 주의력 및\n집중력 향상에 도움을 줍니다. \n\n일기 작성을 통해 단어를 떠올리고 문장을 조작하는 능력을 지속적으로\n연습하여 언어 능력 유지에 도움을 줍니다.';
+const JUMBOTRON_CONTENT = '일기 작성은 하루의 사건, 감정, 생각을 기록하여 단기 기억 능력 향상에 도움을 주며,\n장기 기억으로 변환하는데 도움을 줍니다.\n\n일기를 쓰는 행위 자체가 주의를 기울이는 활동이므로 주의력 및\n집중력 향상에 도움을 줍니다.\n\n일기 작성을 통해 단어를 떠올리고 문장을 조작하는 능력을 지속적으로\n연습하여 언어 능력 유지에 도움을 줍니다.';
+
+// interface: 일기 테이블 레코드 컴포넌트 속성 //
+interface TableItemProps {
+  diary: Diary;
+}
 
 // component: 일기 테이블 레코드 컴포넌트 //
-function TableItem() { 
+function TableItem({ diary }: TableItemProps) {
 
-    // render: 일기  테이브 레코드 컴포넌트 렌더링 //
-    return ( 
-        <div className='tr'>
-            <div className='td'>2025-03-19</div>
-            <div className='td title'>내가 그린 기린 그림은 잘그린 기린 그림이고 네가 그린 기린 그림은 잘 못그린 기린 그림이다.
-            안녕하세요 잘가세요.
-            </div>
-            <div className='td'>맑음</div>
-            <div className='td'>행복</div>
-        </div>
-    )
+  const { writeDate, title, weather, feeling } = diary;
+
+  // render: 일기 테이블 레코드 컴포넌트 렌더링 //
+  return (
+    <div className='tr'>
+      <div className='td'>{writeDate}</div>
+      <div className='td title'>{title}</div>
+      <div className='td'>{weather}</div>
+      <div className='td'>{feeling}</div>
+    </div>
+  )
 }
 
 // component: 일기 메인 화면 컴포넌트 //
-export default function DiaryMain() { 
+export default function DiaryMain() {
 
-    const [totalList, setTotalList] = useState<Diary[]>([]);
-    const [totalCount, setTotalCount] = useState<number>(0);
-    const [totalPage, setTotalPage] = useState<number>(0);
-    const [totalSection, setTotalSection] = useState<number>(0);
-    const [currentPage, setCurrentPage] = useState<number>(0);
-    const [viewList, setViewList] = useState<Diary[]>([]);
+  // state: 페이지네이션 상태 //
+  const { 
+    currentPage, setCurrentPage, currentSection, setCurrentSection,
+    totalSection, setTotalList, viewList, pageList
+  } = usePaginations<Diary>();
 
-    // function: 전체 리스트 변경 함수 //
-    const init = (totalList: Diary[]) => { 
-        const totalCount = totalList.length;
-        setTotalCount(totalCount);
-        // ceil : 올림
-        const totalPage = Math.ceil(totalCount / 10);
-        setTotalPage(totalPage);
-        const totalSection = Math.ceil(totalPage / 10);
-        setTotalSection(totalSection);
+  // function: 네비게이터 함수 //
+  const navigator = useNavigate();
 
-        setCurrentPage(1);
-    };
+  // event handler: 작성하기 버튼 클릭 이벤트 처리 //
+  const onWriteButtonClickHandler = () => {
+    navigator(DIARY_WRITE_ABSOLUTE_PATH);
+  };
 
-    // fucntion: 뷰 리스트 변경 함수 //
-    const initViewList = (totalList: Diary[]) => { 
-        const totalCount = totalList.length;
-        const startIndex = (currentPage - 1) * 10;
-        const endIndex = totalCount * 10 > totalCount ? totalCount : totalCount * 10;
-        const viewList: Diary[] = totalList.slice(startIndex, endIndex);
-        // for (let index = startIndex; index < endIndex; index++){ 
-        //     viewList.push(totalList[index]);
-        // }
-        setViewList(viewList);
-    };
+  
+  useEffect(() => {
+    setTotalList(MOCK);
+  }, []);
 
-    // effect: 전체 리스트가 변경되면 실행할 함수 //
-    useEffect(( ) => { 
-        // 길이가 0 이상이면 추가해라
-        if(totalList.length) init(totalList);
-    }, [totalList]);
-
-    // effect: 현재 페이지가 변경되면 시행할 함수 //
-    useEffect(( ) => { 
-        if(currentPage) initViewList(totalList);
-    }, [currentPage]);
-
-    // function: 네비게이터 함수 //
-    const navigator = useNavigate();
-
-    // event handler: 작성하기 버튼 클릭 이벤트 처리 //
-    const onWriteButtonClickHandler = () => { 
-        navigator(DIARY_WRITE_ABSOLUTE_PATH);
-    };
-
-    // render: 일기 메인 화면 컴포넌트 렌더링//
-    return (
-        <div id='diary-main-wrapper'>
-            <div className='jumbotron'>
-                <div className='jumbotron-box'>
-                    <div className='jumbotron-content-box'>
-                        <div className='jumbotron-title'>일기</div>
-                        <div className='jumbotron-content'>{JUMBOTRON_CONTENT}</div>
-                    </div>
-                    <div className='jumbotron-button-box'>
-                        <div className='button primary middle' onClick={onWriteButtonClickHandler}>작성하기</div>
-                    </div>
-                </div>
-            </div>
-            <div className='diary-list-container'>
-                <div className='diary-list-table'>
-                    <div className='tr'>
-                        <div className='th'>날짜</div>
-                        <div className='th title'>제목</div>
-                        <div className='th'>날씨</div>
-                        <div className='th'>기분</div>
-                    </div>
-                    <TableItem />
-                    <TableItem />
-                    <TableItem />
-                    <TableItem />
-                    <TableItem />
-                    <TableItem />
-                    <TableItem />
-                    <TableItem />
-                    <TableItem />
-                    <TableItem />
-                </div>
-                <div className='pagination-container'></div>
-            </div>
+  // render: 일기 메인 화면 컴포넌트 렌더링 //
+  return (
+    <div id='diary-main-wrapper'>
+      <div className='jumbotron'>
+        <div className='jumbotron-box'>
+          <div className='jumbotron-content-box'>
+            <div className='jumbotron-title'>일기</div>
+            <div className='jumbotron-content'>{JUMBOTRON_CONTENT}</div>
+          </div>
+          <div className='jumbotron-button-box'>
+            <div className='button primary middle' onClick={onWriteButtonClickHandler}>작성하기</div>
+          </div>
         </div>
-    )
+      </div>
+      <div className='diary-list-container'>
+        <div className='diary-list-table'>
+          <div className='tr'>
+            <div className='th'>날짜</div>
+            <div className='th title'>제목</div>
+            <div className='th'>날씨</div>
+            <div className='th'>기분</div>
+          </div>
+          {viewList.map((diary, index) => <TableItem key={index} diary={diary} />)}
+        </div>
+        <div className='pagination-container'>
+          <Pagination 
+            currentPage={currentPage}
+            currentSection={currentSection}
+            totalSection={totalSection}
+            pageList={pageList}
+            setCurrentPage={setCurrentPage}
+            setCurrentSection={setCurrentSection}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const MOCK: Diary[] = [
+    { writeDate: '2025-03-19', title: '0 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '1 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '2 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '3 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '4 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '5 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '6 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '7 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '8 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '9 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '10 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '11 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '12 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '13 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '14 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '15 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '16 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '17 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '18 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '19 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '20 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '21 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '22 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '23 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '24 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '25 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '26 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '27 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '28 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '29 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '30 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '31 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '32 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '33 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '34 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '35 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '36 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '37 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '38 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '39 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '40 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '41 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '42 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '43 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '44 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '45 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '46 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '47 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '48 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '49 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '50 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '51 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '52 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '53 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '54 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '55 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '56 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '57 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '58 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '0 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '1 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '2 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '3 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '4 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '5 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '6 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '7 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '8 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '9 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '10 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '11 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '12 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '13 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '14 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '15 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '16 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '17 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '18 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '19 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '20 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '21 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '22 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '23 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '24 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '25 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '26 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '27 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '28 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '29 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '30 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '31 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '32 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '33 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '34 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '35 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '36 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '37 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '38 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '39 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '40 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '41 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '42 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '43 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '44 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '45 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '46 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '47 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '48 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '49 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '50 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '51 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '52 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '53 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '54 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '55 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '56 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '57 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '58 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },{ writeDate: '2025-03-19', title: '0 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '1 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '2 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '3 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '4 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '5 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '6 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '7 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '8 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '9 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '10 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '11 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '12 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '13 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '14 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '15 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '16 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '17 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '18 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '19 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '20 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '21 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '22 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '23 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '24 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '25 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '26 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '27 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '28 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '29 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '30 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '31 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '32 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '33 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '34 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '35 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '36 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '37 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '38 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '39 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '40 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '41 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '42 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '43 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '44 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '45 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '46 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '47 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '48 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '49 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '50 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '51 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '52 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '53 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '54 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '55 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '56 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '57 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '58 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },{ writeDate: '2025-03-19', title: '0 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '1 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '2 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '3 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '4 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '5 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '6 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '7 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '8 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '9 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '10 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '11 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '12 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '13 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '14 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '15 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '16 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '17 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '18 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '19 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '20 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '21 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '22 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '23 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '24 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '25 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '26 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '27 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '28 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '29 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '30 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '31 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '32 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '33 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '34 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '35 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '36 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '37 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '38 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '39 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '40 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '41 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '42 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '43 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '44 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '45 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '46 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '47 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '48 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '49 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '50 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '51 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '52 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '53 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '54 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '55 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '56 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '57 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+    { writeDate: '2025-03-19', title: '58 내가 그린 기린 그림은 잘 그린 기린 그림이고, 네가 그린 그림은 잘 못그린 기린 그림이다. 안녕하세요. 잘가세요.', weather: '맑음', feeling: '행복' },
+  ]
+
+function usePagination(): { currentPage: any; setCurrentPage: any; currentSection: any; setCurrentSection: any; totalSection: any; setTotalList: any; viewList: any; pageList: any; } {
+    throw new Error("Function not implemented.");
 }

@@ -67,12 +67,18 @@
 .diary-list-table>.tr{
     display: flex;
     box-sizing: border-box;
-    height: 50px;
     border-bottom: 1px solid var(--Lightmode-Grey3);
+    height: 50px;
+
+    cursor: pointer;
 }
 
 .diary-list-table>.tr:last-child {
     border: none;
+}
+
+.diary-list-table>.tr:first-child {
+    cursor: default;
 }
 
 .diary-list-table .th,

@@ -8,4 +8,6 @@ export default interface GetDiaryResponseDto extends ResponseDto {
     feeling: Feeling;
     title: string;
     content: string;
+    writerId: string;
 }
+

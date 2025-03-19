@@ -4,7 +4,7 @@ import './style.css';
 import { AuthPage, JoinType } from '../../../types/aliases';
 import InputBox from '../../../components/InputBox';
 import { IdCheckRequestDto,  SignUpRequestDto } from '../../../apis/dto/request/auth';
-import { idCheckRequest, signUpRequest } from '../../../apis';
+import { idCheckRequest, signUpRequest, SNS_SIGN_IN_URL } from '../../../apis';
 import { ResponseDto } from '../../../apis/dto/response';
 import { useCookies } from 'react-cookie';
 import { JOIN_TYPE, ROOT_PATH, SNS_ID } from '../../../constants';
@@ -184,8 +184,9 @@ export default function SignUp(props: Props) {
 
   // event handler: sns 로그인 버튼 클릭 이벤트 처리 //
   const onSnsButtonClickHandler = (sns: 'kakao' | 'naver') => {
-    window.location.href = `http://localhost:4000/api/v1/auth/sns/${sns}`;
+    window.location.href = SNS_SIGN_IN_URL(sns);
   };
+
 
   // event handler: 회원가입 버튼 클릭 이벤트 처리 //
   const onSignUpClickHandler = () => {

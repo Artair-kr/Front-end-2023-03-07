@@ -91,3 +91,30 @@ body {
   color: var(--Lightmode-Grey);
   font-weight: 600;
 }
+
+.feeling-icon {
+  width: 18px;
+  height: 18px;
+
+  background-size: 100% 100%;
+}
+
+.feeling-icon.normal {
+  background-image: url('C:/Users/user/Documents/HSJ/memories-front/src/assets/images/normal.png');
+}
+
+.feeling-icon.happy {
+  background-image: url('C:/Users/user/Documents/HSJ/memories-front/src/assets/images/happy.png');
+}
+
+.feeling-icon.funny {
+  background-image: url('C:/Users/user/Documents/HSJ/memories-front/src/assets/images/funny.png');
+}
+
+.feeling-icon.sad {
+  background-image: url('C:/Users/user/Documents/HSJ/memories-front/src/assets/images/sad.png');
+}
+
+.feeling-icon.angry {
+  background-image: url('C:/Users/user/Documents/HSJ/memories-front/src/assets/images/angry.png');
+}

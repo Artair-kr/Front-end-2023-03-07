@@ -23,6 +23,15 @@ function TableItem({ diary }: TableItemProps) {
 
   const { diaryNumber, writeDate, title, weather, feeling } = diary;
 
+  // variable: 기분 아이콘 클래스 //
+  const feelingIconClass = `feeling-icon ${
+    feeling === '보통' ? 'normal' :
+    feeling === '행복' ? 'happy' :
+    feeling === '즐거움' ? 'funny' :
+    feeling === '슬픔' ? 'sad' :
+    feeling === '분노' ? 'angry' : ''
+  }`;
+
   // function: 네비게이터 함수 //
   const navigator = useNavigate();
 
@@ -37,7 +46,12 @@ function TableItem({ diary }: TableItemProps) {
       <div className='td'>{writeDate}</div>
       <div className='td title'>{title}</div>
       <div className='td'>{weather}</div>
-      <div className='td'>{feeling}</div>
+      <div className='td'>
+        <div className='feeling-box'>
+            <div className={feelingIconClass}></div>
+            <div className='feeling-text'>{feeling}</div>
+        </div>
+      </div>
     </div>
   )
 }

@@ -5,6 +5,9 @@ import { Outlet, useLocation, useNavigate } from 'react-router'
 import './style.css'
 import { ACCESS_TOKEN, AUTH_ABSOLUTE_PATH, CONCENTRATION_TEST_ABSOLUTE_PATH, DIARY_ABSOLUTE_PATH, MAIN_ABSOLUTE_PATH, MEMORY_TEST_ABSOLUTE_PATH, ROOT_PATH } from '../../constants';
 import { useCookies } from 'react-cookie';
+import { GetSignInUserRequest } from 'src/apis';
+import { GetSignInUserResponseDto } from 'src/apis/dto/response/user';
+import { ResponseDto } from 'src/apis/dto/response';
 
 // component: 공통 레이아웃 컴포넌트 //
 export default function Layout() {
@@ -30,6 +33,16 @@ export default function Layout() {
 
   // variable: 집중력 검사 클래스 //
   const concentrationTestClass = pathname.startsWith(CONCENTRATION_TEST_ABSOLUTE_PATH) ? 'navigation-item active' : 'navigation-item';
+
+  // function: get sign in user response 처리 함수 //
+  const GetSignInUserResponse = (responseBody: GetSignInUserResponseDto | 
+  ResponseDto | null) => { 
+    const message =
+      !responseBody ? '서버에 문제가 있습니다.' : 
+      responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
+      responseBody.code === 'AF' ? '인증에 실패했습니다.' : '';
+
+  };
 
   // event handler: 홈 클릭 이벤트 처리 //
   const onHomeClickHandler = () => { 
@@ -61,7 +74,13 @@ export default function Layout() {
     setShowMyContent(!showMyContent);
   };
 
-  // effect: cookie의 accessToken이  변경될 시  실행할 함수 //
+  // effect: cookie의 accessToken이 변경될 시 실행할 함수 //
+  useEffect(() =>  { 
+    if (!cookies[ACCESS_TOKEN]) return;
+    GetSignInUserRequest(cookies[ACCESS_TOKEN]).then(GetSignInUserResponse)
+  },[cookies[ACCESS_TOKEN]]);
+
+  // effect: cookie의 accessToken과 경로가 변경될 시 실행할 함수 //
   useEffect(() =>  { 
     if(!cookies[ACCESS_TOKEN]) navigator(AUTH_ABSOLUTE_PATH);
   }, [cookies[ACCESS_TOKEN], pathname]);

@@ -77,7 +77,7 @@ body {
 }
 
 .button.error {
-  background-color: var(--Lightmode-Grey);
+  background-color: var(--Error);
 
   color: var(--White);
 }

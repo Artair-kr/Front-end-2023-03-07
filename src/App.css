@@ -76,6 +76,12 @@ body {
   color: var(--White);
 }
 
+.button.error {
+  background-color: var(--Lightmode-Grey);
+
+  color: var(--White);
+}
+
 .link {
   color: var(--Lightmode-Grey4);
 

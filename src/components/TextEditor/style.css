@@ -30,53 +30,53 @@
 }
 
 #text-editor-menu-bar .item-box .item.bold {
-  background-image: url(../../assets/images/text-bold.png);
+  background-image: url(src/assets/images/text-bold.png);
 }
 
 #text-editor-menu-bar .item-box .item.italics {
-  background-image: url(../../assets/images/text-italics.png);
+  background-image: url(src/assets/images/text-italics.png);
 }
 
 #text-editor-menu-bar .item-box .item.strike {
-  background-image: url(../../assets/images/text-strike.png);
+  background-image: url(src/assets/images/text-strike.png);
 }
 
 #text-editor-menu-bar .item-box .item.h1 {
-  background-image: url(../../assets/images/text-h1.png);
+  background-image: url(src/assets/images/text-h1.png);
 }
 
 #text-editor-menu-bar .item-box .item.h2 {
-  background-image: url(../../assets/images/text-h2.png);
+  background-image: url(src/assets/images/text-h2.png);
 }
 
 #text-editor-menu-bar .item-box .item.h3 {
-  background-image: url(../../assets/images/text-h3.png);
+  background-image: url(src/assets/images/text-h3.png);
 }
 
 #text-editor-menu-bar .item-box .item.ol {
-  background-image: url(../../assets/images/text-ol.png);
+  background-image: url(src/assets/images/text-ol.png);
   background-position: 50% 50%;
   background-size: 80% 80%;
   background-repeat: no-repeat;
 }
 
 #text-editor-menu-bar .item-box .item.ul {
-  background-image: url(../../assets/images/text-ul.png);
+  background-image: url(src/assets/images/text-ul.png);
   background-position: 50% 50%;
   background-size: 80% 80%;
   background-repeat: no-repeat;
 }
 
 #text-editor-menu-bar .item-box .item.left {
-  background-image: url(../../assets/images/text-return-left.png);
+  background-image: url(src/assets/images/text-return-left.png);
 }
 
 #text-editor-menu-bar .item-box .item.right {
-  background-image: url(../../assets/images/text-return-right.png);
+  background-image: url(src/assets/images/text-return-right.png);
 }
 
 #text-editor-menu-bar .item-box .item.hori {
-  background-image: url(../../assets/images/text-hori.png);
+  background-image: url(src/assets/images/text-hori.png);
 }
 
 .tiptap {

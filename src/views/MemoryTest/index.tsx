@@ -63,13 +63,13 @@ export default function MemoryTest() {
   // fucntion: 네비게이터 함수 //
   const navigator = useNavigate();
 
-  // 
-  const PostMemoryResponse = (responseBody: ResponseDto | null) => { 
-    const message = 
+  // function: post memory response 처리 함수 //
+  const postMemoryResponse = (responseBody: ResponseDto | null) => {
+    const message =
       !responseBody ? '서버에 문제가 있습니다.' :
       responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
       responseBody.code === 'AF' ? '인증에 실패했습니다.' : '';
-    
+
     const isSuccess = responseBody !== null && responseBody.code === 'SU';
     if (!isSuccess) {
       alert(message);
@@ -146,11 +146,11 @@ export default function MemoryTest() {
 
   // effect: 종료 상태가 변경될시 실행할 함수 //
   useEffect(() => { 
-    if (!isFinish || !accessToken) return 
+    if (!isFinish || !accessToken) return;
     const requestBody: PostMemoryRequestDto = { 
       measurementTime
     };
-    PostMemoryRequest(requestBody, accessToken).then(PostMemoryResponse);
+    PostMemoryRequest(requestBody, accessToken).then(postMemoryResponse);
   }, [isFinish]);
 
   // render: 기억력 검사 화면 컴포넌트 렌더링 //

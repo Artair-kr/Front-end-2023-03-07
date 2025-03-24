@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router';
 import PostConcentrationRequestDto from 'src/apis/dto/request/test/post-concentraion-request.dto';
 
 // variable: 전체 시간 (60초) //
-const TOTAL_TIME = 60 * 1000 ;
+const TOTAL_TIME = 10 * 1000 ;
 // variable: 별 표시 시간 (0.25초) //
 const STAR_TIME = 400;
 // variable: 별 표시 횟수 //

@@ -1,5 +1,5 @@
 // interface: post concentraition request body DTO//
-export default interface PostConcentraitionRequestDto{ 
+export default interface PostConcentrationRequestDto{ 
   measurementScore: number;
   errorCount: number;
 }

@@ -137,7 +137,7 @@ export const PostMemoryRequest = async (requestBody: PostMemoryRequestDto, acces
 };
 
 // function: post concentration API 요청 함수 //
-export const PostConcentrationRequest = async (requestBody: PostConcentraitionRequestDto, accessToken: string) => { 
+export const postConcentrationRequest = async (requestBody: PostConcentraitionRequestDto, accessToken: string) => { 
   const responseBody = await axios.post(POST_CONCENTRATION_URL, requestBody, bearerAuthorization(accessToken))
     .then(responseSuccessHandler)
     .catch(responseErrorHandler);

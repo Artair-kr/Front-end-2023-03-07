@@ -12,7 +12,7 @@ import DiaryDetail from './views/Diary/Detail';
 import DiaryUpdate from './views/Diary/Update';
 import MemoryTest from './views/MemoryTest';
 import MemoryTestComplete from './views/MemoryTest/Complete';
-import ConcentrationTest from './views/Concentration';
+import ConcentrationTest from './views/ConcentrationTest';
 
 
 // Router 구성

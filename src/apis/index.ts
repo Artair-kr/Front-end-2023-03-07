@@ -36,11 +36,11 @@ const TEST_MODULE_URL = `${API_DOMAIN}/api/v1/test`;
 
 const POST_MEMORY_URL = `${TEST_MODULE_URL}/memory`;
 const POST_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration`;
-const Get_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration`;
+const GET_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration`;
 const GET_MEMORY_URL = `${TEST_MODULE_URL}/memory`;
 
 // function: Authorization Bearer 헤더 //
-const  bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } })
+const bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } });
 
 // function: response 성공 처리 함수 //
 const responseSuccessHandler = <T = ResponseDto>(response: AxiosResponse<T>) => {
@@ -154,7 +154,7 @@ export const getMemoryRequest = async (accessToken: string) => {
 
 // function: get concentration API 요청 함수 //
 export const getConcentrationRequest = async (accessToken: string) => { 
-  const responseBody = await axios.get(Get_CONCENTRATION_URL, bearerAuthorization(accessToken))
+  const responseBody = await axios.get(GET_CONCENTRATION_URL, bearerAuthorization(accessToken))
     .then(responseSuccessHandler<GetConcentrationResponseDto>)
     .catch(responseErrorHandler);
   return responseBody;

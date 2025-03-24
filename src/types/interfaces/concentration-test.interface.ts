@@ -1,8 +1,8 @@
-export default interface concentraionTest { 
+export default interface ConcentraitonTest { 
   sequence: number;
   measurementScore: number;
   errorCount: number;
   testDate: string;
-  scoreGap: number;
-  errorGap: number;
+  scoreGap: number | null;
+  errorGap: number | null;
 }

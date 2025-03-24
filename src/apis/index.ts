@@ -7,8 +7,9 @@ import { PatchDiaryRequestDto, PostDiaryRequestDto } from "./dto/request/diary";
 import { GetMyDiaryResponseDto } from "./dto/response/diary";
 import GetDiaryResponseDto from "./dto/response/diary/get-diary.response.dto";
 import { GetSignInUserResponseDto } from "./dto/response/user";
-import { PostMemoryRequestDto } from "./dto/request/test";
+import { PostConcentraitionRequestDto, PostMemoryRequestDto } from "./dto/request/test";
 import { GetMemoryResponseDto } from "./dto/response/test";
+import GetConcentrationResponseDto from "./dto/response/test/get-concentration.response.dto";
 
 // variable: URL 상수 //
 const API_DOMAIN = process.env.REACT_APP_API_DOMAIN;
@@ -135,10 +136,26 @@ export const PostMemoryRequest = async (requestBody: PostMemoryRequestDto, acces
   return responseBody;
 };
 
+// function: post concentration API 요청 함수 //
+export const PostConcentrationRequest = async (requestBody: PostConcentraitionRequestDto, accessToken: string) => { 
+  const responseBody = await axios.post(POST_CONCENTRATION_URL, requestBody, bearerAuthorization(accessToken))
+    .then(responseSuccessHandler)
+    .catch(responseErrorHandler);
+  return responseBody ;
+};
+
 // function: get memory API 요청 함수 //
 export const getMemoryRequest = async (accessToken: string) => { 
   const responseBody = await axios.get(GET_MEMORY_URL, bearerAuthorization(accessToken))
     .then(responseSuccessHandler<GetMemoryResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: get concentration API 요청 함수 //
+export const getConcentrationRequest = async (accessToken: string) => { 
+  const responseBody = await axios.get(Get_CONCENTRATION_URL, bearerAuthorization(accessToken))
+    .then(responseSuccessHandler<GetConcentrationResponseDto>)
     .catch(responseErrorHandler);
   return responseBody;
 };

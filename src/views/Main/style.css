@@ -27,3 +27,17 @@
 
   background-color: var(--White);
 }
+
+#main-wrapper .profile-image{ 
+  border-radius: 6px;
+  width: 134px;
+  height: 180px;
+
+  background-color: var(--Lightmode-Grey3);
+  background-size: cover;
+  background-position: 50% 50%;
+}
+
+#main-wrapper .user-info-box { 
+    
+}

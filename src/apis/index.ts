@@ -8,7 +8,7 @@ import { GetMyDiaryResponseDto } from "./dto/response/diary";
 import GetDiaryResponseDto from "./dto/response/diary/get-diary.response.dto";
 import { GetSignInUserResponseDto } from "./dto/response/user";
 import { PostConcentraitionRequestDto, PostMemoryRequestDto } from "./dto/request/test";
-import { GetMemoryResponseDto } from "./dto/response/test";
+import { GetMemoryResponseDto, GetRecentlyConcentrationResponseDto, GetRecentlyMemoryResponseDto } from "./dto/response/test";
 import GetConcentrationResponseDto from "./dto/response/test/get-concentration.response.dto";
 
 // variable: URL 상수 //
@@ -38,6 +38,13 @@ const POST_MEMORY_URL = `${TEST_MODULE_URL}/memory`;
 const POST_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration`;
 const GET_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration`;
 const GET_MEMORY_URL = `${TEST_MODULE_URL}/memory`;
+
+const GET_RECENTLY_MEMORY_URL = `${TEST_MODULE_URL}/memory/recently`;
+const GET_RECENTLY_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration/recently`;
+
+const FILE_UPLOAD_URL = `${API_DOMAIN}/file/upload`;
+
+const multipartFormData =  { headers: { 'Content-Type': 'multipart/form-data' } };
 
 // function: Authorization Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } });
@@ -159,3 +166,28 @@ export const getConcentrationRequest = async (accessToken: string) => {
     .catch(responseErrorHandler);
   return responseBody;
 };
+
+// function: get recently memory API 요청 함수 //
+export const GetRecentlyMemoryRequest = async (accessToken: string) => { 
+  const responseBody = await axios.get(GET_RECENTLY_MEMORY_URL, bearerAuthorization(accessToken))
+    .then(responseSuccessHandler<GetRecentlyMemoryResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: get recently concentration API 요청 함수 //
+export const GetRecentlyConcentrationRequest = async (accessToken: string) => { 
+  const responseBody = await axios.get(GET_RECENTLY_CONCENTRATION_URL, bearerAuthorization(accessToken))
+    .then(responseSuccessHandler<GetRecentlyConcentrationResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: file upload 요청 함수 //
+// accessToken은 필요없지만 파일 형식을 바꿔야한다.
+export const FileUploadReauest = async (requestBody: FormData) => { 
+  const responseBody = await axios.post(FILE_UPLOAD_URL, requestBody, multipartFormData)
+    .then(responseSuccessHandler<string>)
+    .catch(error => null);
+  return responseBody;
+}

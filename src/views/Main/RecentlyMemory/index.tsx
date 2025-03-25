@@ -3,11 +3,13 @@ import UserInfo from "../UserInfo";
 import { MEMORY_TEST_ABSOLUTE_PATH } from "src/constants";
 import { useNavigate } from "react-router";
 
+// component: 최근 기억력 검사 컴포넌트 //
 export default function RecentlyMemory(){ 
 
   // fucntion: 네비게이터 함수 //
   const navigator = useNavigate();
 
+  // event handler: 검사 버튼 클릭 이벤트 처리 //
   const onTestClickHandler = () => { 
     navigator(MEMORY_TEST_ABSOLUTE_PATH);
   };

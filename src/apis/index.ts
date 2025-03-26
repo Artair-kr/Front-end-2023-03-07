@@ -1,15 +1,19 @@
-import { IdCheckRequestDto, SignInRequestDto, SignUpRequestDto } from "./dto/request/auth";
-
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { ResponseDto } from "./dto/response";
-import { SignInResponseDto } from "./dto/response/auth";
-import { PatchDiaryRequestDto, PostDiaryRequestDto } from "./dto/request/diary";
-import { GetMyDiaryResponseDto } from "./dto/response/diary";
-import GetDiaryResponseDto from "./dto/response/diary/get-diary.response.dto";
-import { GetSignInUserResponseDto } from "./dto/response/user";
-import { PostConcentraitionRequestDto, PostMemoryRequestDto } from "./dto/request/test";
-import { GetMemoryResponseDto, GetRecentlyConcentrationResponseDto, GetRecentlyMemoryResponseDto } from "./dto/response/test";
-import GetConcentrationResponseDto from "./dto/response/test/get-concentration.response.dto";
+
+import { IdCheckRequestDto, SignInRequestDto, SignUpRequestDto } from './dto/request/auth';
+import { ResponseDto } from './dto/response';
+import { SignInResponseDto } from './dto/response/auth';
+import { PatchDiaryRequestDto, PostDiaryRequestDto } from './dto/request/diary';
+import { GetMyDiaryResponseDto } from './dto/response/diary';
+import { PostConcentraitionRequestDto, PostMemoryRequestDto } from './dto/request/test';
+import { PostConcentrationResponseDto, GetMemoryResponseDto, GetRecentlyConcentrationResponseDto, GetRecentlyMemoryResponseDto } from './dto/response/test';
+import GetDiaryResponseDto from './dto/response/diary/get-diary.response.dto';
+import { GetSignInUserResponseDto } from './dto/response/user';
+import { PatchUserRequestDto } from './dto/request/user';
+import PostConcentrationRequestDto from './dto/request/test/post-concentraion-request.dto';
+import GetConcentrationResponseDto from './dto/response/test/get-concentration.response.dto';
+
+
 
 // variable: URL 상수 //
 const API_DOMAIN = process.env.REACT_APP_API_DOMAIN;
@@ -22,8 +26,9 @@ const SIGN_IN_URL = `${AUTH_MODULE_URL}/sign-in`;
 export const SNS_SIGN_IN_URL = (sns: 'kakao' | 'naver') => `${AUTH_MODULE_URL}/sns/${sns}`;
 
 const DIARY_MODULE_URL = `${API_DOMAIN}/api/v1/diary`;
+
 const POST_DIARY_URL = `${DIARY_MODULE_URL}`;
-const GET_MY_DIARY_URL = `${DIARY_MODULE_URL}/my`
+const GET_MY_DIARY_URL = `${DIARY_MODULE_URL}/my`;
 const GET_DIARY_URL = (diaryNumber: number | string) => `${DIARY_MODULE_URL}/${diaryNumber}`;
 const PATCH_DIARY_URL = (diaryNumber: number | string) => `${DIARY_MODULE_URL}/${diaryNumber}`;
 const DELETE_DIARY_URL = (diaryNumber: number | string) => `${DIARY_MODULE_URL}/${diaryNumber}`;
@@ -31,23 +36,23 @@ const DELETE_DIARY_URL = (diaryNumber: number | string) => `${DIARY_MODULE_URL}/
 const USER_MODULE_URL = `${API_DOMAIN}/api/v1/user`;
 
 const GET_SIGN_IN_USER_URL = `${USER_MODULE_URL}/sign-in`;
+const PATCH_USER_URL = `${USER_MODULE_URL}`;
 
 const TEST_MODULE_URL = `${API_DOMAIN}/api/v1/test`;
 
 const POST_MEMORY_URL = `${TEST_MODULE_URL}/memory`;
 const POST_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration`;
-const GET_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration`;
 const GET_MEMORY_URL = `${TEST_MODULE_URL}/memory`;
-
+const GET_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration`;
 const GET_RECENTLY_MEMORY_URL = `${TEST_MODULE_URL}/memory/recently`;
 const GET_RECENTLY_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration/recently`;
 
 const FILE_UPLOAD_URL = `${API_DOMAIN}/file/upload`;
 
-const multipartFormData =  { headers: { 'Content-Type': 'multipart/form-data' } };
+const multipartFormData = { headers: { 'Content-Type': 'multipart/form-data' } };
 
 // function: Authorization Bearer 헤더 //
-const bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } });
+const bearerAuthorization = (accessToken: string) => ({ headers: { 'Authorization': `Bearer ${accessToken}` } })
 
 // function: response 성공 처리 함수 //
 const responseSuccessHandler = <T = ResponseDto>(response: AxiosResponse<T>) => {
@@ -88,7 +93,7 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
 };
 
 // function: post diary API 요청 함수 //
-export const postDiaryRequest = async (requestBody: PostDiaryRequestDto, accessToken: string) => { 
+export const postDiaryRequest = async (requestBody: PostDiaryRequestDto, accessToken: string) => {
   const responseBody = await axios.post(POST_DIARY_URL, requestBody, bearerAuthorization(accessToken))
     .then(responseSuccessHandler)
     .catch(responseErrorHandler);
@@ -96,7 +101,7 @@ export const postDiaryRequest = async (requestBody: PostDiaryRequestDto, accessT
 };
 
 // function: get my diary API 요청 함수 //
-export const getMyDiaryRequest = async (accessToken: string) => { 
+export const getMyDiaryRequest = async (accessToken: string) => {
   const responseBody = await axios.get(GET_MY_DIARY_URL, bearerAuthorization(accessToken))
     .then(responseSuccessHandler<GetMyDiaryResponseDto>)
     .catch(responseErrorHandler)
@@ -112,7 +117,7 @@ export const getDiaryRequest = async (diaryNumber: number | string, accessToken:
 };
 
 // function: patch diary API 요청 함수 //
-export const patchDiaryRequest = async (diaryNumber: number | string, requestBody: PatchDiaryRequestDto, accessToken: string) => { 
+export const patchDiaryRequest = async (diaryNumber: number | string, requestBody: PatchDiaryRequestDto, accessToken: string) => {
   const responseBody = await axios.patch(PATCH_DIARY_URL(diaryNumber), requestBody, bearerAuthorization(accessToken))
     .then(responseSuccessHandler)
     .catch(responseErrorHandler);
@@ -120,7 +125,7 @@ export const patchDiaryRequest = async (diaryNumber: number | string, requestBod
 };
 
 // function: delete diary API 요청 함수 //
-export const deleteDiaryRequest = async (diaryNumber: number | string, accessToken: string) => { 
+export const deleteDiaryRequest = async (diaryNumber: number | string, accessToken: string) => {
   const responseBody = await axios.delete(DELETE_DIARY_URL(diaryNumber), bearerAuthorization(accessToken))
     .then(responseSuccessHandler)
     .catch(responseErrorHandler)
@@ -128,15 +133,23 @@ export const deleteDiaryRequest = async (diaryNumber: number | string, accessTok
 };
 
 // function: get sign in user API 요청 함수 //
-export const GetSignInUserRequest = async (accessToken: string) => { 
+export const getSignInUserRequest = async (accessToken: string) => {
   const responseBody = await axios.get(GET_SIGN_IN_USER_URL, bearerAuthorization(accessToken))
     .then(responseSuccessHandler<GetSignInUserResponseDto>)
     .catch(responseErrorHandler);
-    return responseBody;
+  return responseBody;
+};
+
+// function: patch user API 요청 함수 //
+export const patchUserRequest = async (requestBody: PatchUserRequestDto, accessToken: string) => {
+  const responseBody = await axios.patch(PATCH_USER_URL, requestBody, bearerAuthorization(accessToken))
+    .then(responseSuccessHandler)
+    .catch(responseErrorHandler);
+  return responseBody;
 };
 
 // function: post memory API 요청 함수 //
-export const PostMemoryRequest = async (requestBody: PostMemoryRequestDto, accessToken: string) => { 
+export const postMemoryRequest = async (requestBody: PostMemoryRequestDto, accessToken: string) => {
   const responseBody = await axios.post(POST_MEMORY_URL, requestBody, bearerAuthorization(accessToken))
     .then(responseSuccessHandler)
     .catch(responseErrorHandler);
@@ -144,15 +157,15 @@ export const PostMemoryRequest = async (requestBody: PostMemoryRequestDto, acces
 };
 
 // function: post concentration API 요청 함수 //
-export const postConcentrationRequest = async (requestBody: PostConcentraitionRequestDto, accessToken: string) => { 
+export const postConcentrationRequest = async (requestBody: PostConcentrationRequestDto, accessToken: string) => {
   const responseBody = await axios.post(POST_CONCENTRATION_URL, requestBody, bearerAuthorization(accessToken))
     .then(responseSuccessHandler)
-    .catch(responseErrorHandler);
-  return responseBody ;
+    .catch(responseErrorHandler)
+  return responseBody;
 };
 
 // function: get memory API 요청 함수 //
-export const getMemoryRequest = async (accessToken: string) => { 
+export const getMemoryRequest = async (accessToken: string) => {
   const responseBody = await axios.get(GET_MEMORY_URL, bearerAuthorization(accessToken))
     .then(responseSuccessHandler<GetMemoryResponseDto>)
     .catch(responseErrorHandler);
@@ -160,7 +173,7 @@ export const getMemoryRequest = async (accessToken: string) => {
 };
 
 // function: get concentration API 요청 함수 //
-export const getConcentrationRequest = async (accessToken: string) => { 
+export const getConcentrationRequest = async (accessToken: string) => {
   const responseBody = await axios.get(GET_CONCENTRATION_URL, bearerAuthorization(accessToken))
     .then(responseSuccessHandler<GetConcentrationResponseDto>)
     .catch(responseErrorHandler);
@@ -168,7 +181,7 @@ export const getConcentrationRequest = async (accessToken: string) => {
 };
 
 // function: get recently memory API 요청 함수 //
-export const GetRecentlyMemoryRequest = async (accessToken: string) => { 
+export const getRecentlyMemoryRequest = async (accessToken: string) => {
   const responseBody = await axios.get(GET_RECENTLY_MEMORY_URL, bearerAuthorization(accessToken))
     .then(responseSuccessHandler<GetRecentlyMemoryResponseDto>)
     .catch(responseErrorHandler);
@@ -176,7 +189,7 @@ export const GetRecentlyMemoryRequest = async (accessToken: string) => {
 };
 
 // function: get recently concentration API 요청 함수 //
-export const GetRecentlyConcentrationRequest = async (accessToken: string) => { 
+export const getRecentlyConcentration = async (accessToken: string) => {
   const responseBody = await axios.get(GET_RECENTLY_CONCENTRATION_URL, bearerAuthorization(accessToken))
     .then(responseSuccessHandler<GetRecentlyConcentrationResponseDto>)
     .catch(responseErrorHandler);
@@ -184,10 +197,9 @@ export const GetRecentlyConcentrationRequest = async (accessToken: string) => {
 };
 
 // function: file upload 요청 함수 //
-// accessToken은 필요없지만 파일 형식을 바꿔야한다.
-export const FileUploadReauest = async (requestBody: FormData) => { 
+export const fileUploadRequest = async (requestBody: FormData) => {
   const responseBody = await axios.post(FILE_UPLOAD_URL, requestBody, multipartFormData)
     .then(responseSuccessHandler<string>)
     .catch(error => null);
   return responseBody;
-}
+};

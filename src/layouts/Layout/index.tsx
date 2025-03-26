@@ -1,14 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router'
+import { useEffect, useRef, useState } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 
-// 스타일 적용
-import './style.css'
-import { ACCESS_TOKEN, AUTH_ABSOLUTE_PATH, CONCENTRATION_TEST_ABSOLUTE_PATH, DIARY_ABSOLUTE_PATH, MAIN_ABSOLUTE_PATH, MEMORY_TEST_ABSOLUTE_PATH, ROOT_PATH } from '../../constants';
+import { ACCESS_TOKEN, AUTH_ABSOLUTE_PATH, CONCENTRATION_TEST_ABSOLUTE_PATH, DIARY_ABSOLUTE_PATH, MAIN_ABSOLUTE_PATH, MEMORY_TEST_ABSOLUTE_PATH, ROOT_PATH } from 'src/constants';
+
+import './style.css';
 import { useCookies } from 'react-cookie';
-import { GetSignInUserRequest } from 'src/apis';
+import { getSignInUserRequest } from 'src/apis';
 import { GetSignInUserResponseDto } from 'src/apis/dto/response/user';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInUserStore } from 'src/stores';
+import { useSignInUser } from 'src/hooks';
 
 // component: 공통 레이아웃 컴포넌트 //
 export default function Layout() {
@@ -20,11 +21,10 @@ export default function Layout() {
   const [cookies, _, removeCookie] = useCookies();
 
   // state: My Content List 요소 참조 //
-  // (null) : 초기에는 null값이 들어간다.
   const myContentListRef = useRef<HTMLDivElement | null>(null);
 
   // state: 로그인 유저 정보 상태 //
-  const { setUserId, setName, setProfileImage, setAddress, setDetailAddress, setGender, setAge, resetSignInUser } = useSignInUserStore();
+  const { resetSignInUser } = useSignInUserStore();
 
   // state: My Content 드롭다운 상태 //
   const [showMyContent, setShowMyContent] = useState<boolean>(false);
@@ -32,93 +32,70 @@ export default function Layout() {
   // function: 네비게이터 함수 //
   const navigator = useNavigate();
 
+  // function: 로그인 유저 정보 불러오기 함수 //
+  const getSignInUser = useSignInUser();
+
   // variable: 기억력 검사 클래스 //
   const memoryTestClass = pathname.startsWith(MEMORY_TEST_ABSOLUTE_PATH) ? 'navigation-item active' : 'navigation-item';
-
   // variable: 집중력 검사 클래스 //
   const concentrationTestClass = pathname.startsWith(CONCENTRATION_TEST_ABSOLUTE_PATH) ? 'navigation-item active' : 'navigation-item';
 
-  // function: get sign in user response 처리 함수 //
-  const GetSignInUserResponse = (responseBody: GetSignInUserResponseDto | 
-  ResponseDto | null) => { 
-    const message =
-      !responseBody ? '서버에 문제가 있습니다.' : 
-      responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
-      responseBody.code === 'AF' ? '인증에 실패했습니다.' : '';
-
-    const isSuccess = responseBody !== null && responseBody.code === 'SU';
-    if (!isSuccess){ 
-      alert(message);
-      // 제거
-      removeCookie(ACCESS_TOKEN, { path: ROOT_PATH });
-      resetSignInUser();
-      return;
-    }
-
-    const { userId, name, profileImage, address, detailAddress, gender, age } = responseBody as GetSignInUserResponseDto;
-    setUserId(userId);
-    setName(name);
-    setProfileImage(profileImage);
-    setAddress(address);
-    setDetailAddress(detailAddress);
-    setGender(gender);
-    setAge(age);
-  };
-
   // event handler: 홈 클릭 이벤트 처리 //
-  const onHomeClickHandler = () => { 
+  const onHomeClickHandler = () => {
     navigator(MAIN_ABSOLUTE_PATH);
   };
 
-  // event handler: 기억력 검사 이벤트 처리 //
-  const onMemoryTestClickHandler = () => { 
+  // event handler: 기억력 검사 클릭 이벤트 처리 //
+  const onMemoryTestClickHandler = () => {
     navigator(MEMORY_TEST_ABSOLUTE_PATH);
   };
 
-  // event handler: 집중력 검사 이벤트 처리 //
-  const onMyConcentrationHandler = () => { 
+  // event handler: 집중력 검사 클릭 이벤트 처리 //
+  const onConcentrationTestClickHandler = () => {
     navigator(CONCENTRATION_TEST_ABSOLUTE_PATH);
   };
 
   // event handler: 일기 클릭 이벤트 처리 //
-  const onDiaryClickHandler = () => { 
+  const onDiaryClickHandler = () => {
     navigator(DIARY_ABSOLUTE_PATH);
   };
-
-  // event handler: 로그아웃 클릭 이벤트 처리 //
-  const onSignOutClickHandler = () => { 
-    removeCookie(ACCESS_TOKEN, { path: ROOT_PATH});
-  }
 
   // event handler: My Content 클릭 이벤트 처리 //
   const onMyContentClickHandler = () => {
     setShowMyContent(!showMyContent);
   };
 
+  // event handler: 로그아웃 클릭 이벤트 처리 //
+  const onSignOutClickHandler = () => {
+    removeCookie(ACCESS_TOKEN, { path: ROOT_PATH });
+    resetSignInUser();
+  };
+
   // effect: cookie의 accessToken이 변경될 시 실행할 함수 //
-  useEffect(() =>  { 
+  useEffect(() => {
     if (!cookies[ACCESS_TOKEN]) return;
-    GetSignInUserRequest(cookies[ACCESS_TOKEN]).then(GetSignInUserResponse)
-  },[cookies[ACCESS_TOKEN]]);
+    getSignInUser();
+  }, [cookies[ACCESS_TOKEN]]);
 
   // effect: cookie의 accessToken과 경로가 변경될 시 실행할 함수 //
-  useEffect(() =>  { 
-    if(!cookies[ACCESS_TOKEN]) navigator(AUTH_ABSOLUTE_PATH);
+  useEffect(() => {
+    if (!cookies[ACCESS_TOKEN]) navigator(AUTH_ABSOLUTE_PATH);
   }, [cookies[ACCESS_TOKEN], pathname]);
 
   // effect: My Content 드롭다운 상태가 변경될시 실행할 함수 //
   useEffect(() => {
     const onOutsideClickHandler = (event: any) => {
-      if(myContentListRef.current && 
+      if (
+        myContentListRef.current && 
         !myContentListRef.current.contains(event.target as Node)
-      ){
+      ) {
         setShowMyContent(false);
       }
     };
 
-    if(!showMyContent) return;
+    if (!showMyContent) return;
 
-    document.addEventListener('mousedown', onOutsideClickHandler)
+    document.addEventListener('mousedown', onOutsideClickHandler);
 
   }, [showMyContent]);
 
@@ -130,11 +107,11 @@ export default function Layout() {
           <div className='title' onClick={onHomeClickHandler}>Memories</div>
           <div className='navigation-list'>
             <div className={memoryTestClass} onClick={onMemoryTestClickHandler}>기억력 검사</div>
-            <div className={concentrationTestClass} onClick={onMyConcentrationHandler}>집중력 검사</div>
+            <div className={concentrationTestClass} onClick={onConcentrationTestClickHandler}>집중력 검사</div>
           </div>
         </div>
         <div className='my-content' onClick={onMyContentClickHandler}>
-          {showMyContent && 
+          {showMyContent &&
           <div ref={myContentListRef} className='my-content-list'>
             <div className='my-content-item' onClick={onDiaryClickHandler}>일기</div>
             <div className='my-content-item' onClick={onSignOutClickHandler}>로그아웃</div>

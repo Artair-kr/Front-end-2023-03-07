@@ -1,7 +1,7 @@
-import ResponseDto from "../response.dto";
+import { ResponseDto } from 'src/apis/dto/response';
 
 // interface: get sign in user response body DTO //
-export default interface GetSignInUserResponseDto extends ResponseDto{ 
+export default interface GetSignInUserResponseDto extends ResponseDto {
   userId: string;
   name: string;
   profileImage: string | null;

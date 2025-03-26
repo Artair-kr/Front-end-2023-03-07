@@ -4,7 +4,7 @@ import { MemoryCard } from 'src/types/interfaces';
 import { useCookies } from 'react-cookie';
 import { ACCESS_TOKEN, MEMORY_DESCRIPTION, MEMORY_TEST_COMPLETE_ABSOLUTE_PATH } from 'src/constants';
 import { PostMemoryRequestDto } from 'src/apis/dto/request/test';
-import { PostMemoryRequest} from 'src/apis';
+import { postMemoryRequest } from 'src/apis';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useNavigate } from 'react-router';
 import { useMemoryTestStore } from 'src/stores';
@@ -55,10 +55,10 @@ export default function MemoryTest() {
   // state: 측정된 시간 상태 //
   const {measurementTime, setMeasurementTime} = useMemoryTestStore();
 
-  // variable: access Token //
+  // variable: access token //
   const accessToken = cookies[ACCESS_TOKEN];
 
-  // fucntion: 네비게이터 함수 //
+  // function: 네비게이터 함수 //
   const navigator = useNavigate();
 
   // function: post memory response 처리 함수 //
@@ -95,21 +95,19 @@ export default function MemoryTest() {
     );
     setMemoryCards(newMemoryCards);
 
-    // 카드 선택시 두장의 카드가 같지 않다면
-    if (newSelectedCards.length === 2){
+    if (newSelectedCards.length === 2) {
       const [first, second] = newSelectedCards;
-        // 0.5초 후, 다시 뒤집힌다.
-        setTimeout(() => { 
-          if (first.color !== second.color){ 
-            const newMemoryCards = memoryCards.map(
-              card => card.id === first.id || card.id === second.id ? 
-              { ...card, isReverse: true } : card
-            );
-            setMemoryCards(newMemoryCards);
-          }
-          // 선택된것을 빈값으로 바꿔준다.
-          setSelectedCards([]);
-        }, 500);
+      
+      setTimeout(() => {
+        if (first.color !== second.color) {
+          const newMemoryCards = memoryCards.map(
+            card => card.id === first.id || card.id === second.id ? { ...card, isReverse: true } : card
+          );
+          setMemoryCards(newMemoryCards);
+        }
+        setSelectedCards([]);
+      }, 500);
+      
     }
   };
 
@@ -132,23 +130,21 @@ export default function MemoryTest() {
   }, [isStarted]);
 
   // effect: 검사 카드 리스트가 변경될시 실행할 함수 //
-  useEffect(() => { 
-    if (startTime && memoryCards.length && memoryCards.every(card => !card.
-      isReverse)){ 
-        setFinish(true);
-        // ms 단위로 출력된 값을 Math.floor로 ms단위는 버림
-        const measurementTime = Math.floor((Date.now() - startTime) / 1000);
-        setMeasurementTime(measurementTime);
-      }
+  useEffect(() => {
+    if (startTime && memoryCards.length && memoryCards.every(card => !card.isReverse)) {
+      setFinish(true);
+      const measurementTime = Math.floor((Date.now() - startTime) / 1000);
+      setMeasurementTime(measurementTime);
+    }
   }, [memoryCards]);
 
   // effect: 종료 상태가 변경될시 실행할 함수 //
-  useEffect(() => { 
+  useEffect(() => {
     if (!isFinish || !accessToken) return;
-    const requestBody: PostMemoryRequestDto = { 
+    const requestBody: PostMemoryRequestDto = {
       measurementTime
     };
-    PostMemoryRequest(requestBody, accessToken).then(postMemoryResponse);
+    postMemoryRequest(requestBody, accessToken).then(postMemoryResponse);
   }, [isFinish]);
 
   // render: 기억력 검사 화면 컴포넌트 렌더링 //

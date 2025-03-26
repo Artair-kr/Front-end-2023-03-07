@@ -7,7 +7,7 @@
   width: 1180px;
 }
 
-#main-wrapper .user-info-container{ 
+#main-wrapper .user-info-container {
   display: flex;
   gap: 24px;
 
@@ -17,7 +17,7 @@
   background-color: var(--White);
 }
 
-#main-wrapper .recently-container{ 
+#main-wrapper .recently-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -28,7 +28,7 @@
   background-color: var(--White);
 }
 
-#main-wrapper .profile-image{ 
+#main-wrapper .profile-image {
   border-radius: 6px;
   width: 134px;
   height: 180px;
@@ -38,7 +38,7 @@
   background-position: 50% 50%;
 }
 
-#main-wrapper .user-info-box { 
+#main-wrapper .user-info-box {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -47,7 +47,7 @@
   padding: 10px 0;
 }
 
-#main-wrapper .user-info-row{ 
+#main-wrapper .user-info-row {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -55,57 +55,57 @@
   color: var(--Lightmode-Grey);
 }
 
-#main-wrapper .user-info-row .title { 
+#main-wrapper .user-info-row .title {
   width: 50px;
 
   font-size: 16px;
   font-weight: 700;
 }
 
-#main-wrapper .user-info-row .content { 
+#main-wrapper .user-info-row .content {
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
 }
 
-#main-wrapper .recently-top { 
+#main-wrapper .recently-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-#main-wrapper .recently-title-box { 
+#main-wrapper .recently-title-box {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-#main-wrapper .title{ 
+#main-wrapper .recently-title-box .title {
   color: var(--Lightmode-Grey);
 
   font-size: 24px;
   font-weight: 700;
 }
 
-#main-wrapper .info-button{
+#main-wrapper .info-button {
   display: flex;
   align-items: center;
   gap: 4px;
 
-  padding: 8px 10px;
   border-radius: 6px;
+  padding: 8px 10px;
 
   background-color: var(--Second);
 
   color: var(--Primary);
-
+  
   font-size: 14px;
   font-weight: 500;
 
   cursor: pointer;
 }
 
-#main-wrapper .info-button .icon { 
+#main-wrapper .info-button .icon {
   width: 16px;
   height: 16px;
 
@@ -113,42 +113,40 @@
   background-size: 100% 100%;
 }
 
-#main-wrapper .recently-chart-box{ 
+#main-wrapper .recently-chart-box {
   border-radius: 10px;
   height: 300px;
-
-  background-color: var(--Lightmode-Grey3);
 }
 
-#main-wrapper .user-update-container { 
+#main-wrapper .user-update-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-#main-wrapper .user-update-container  .profile-image-box{ 
+#main-wrapper .user-update-container .profile-image-box {
   display: flex;
   justify-content: center;
 }
 
-#main-wrapper .user-update-container .check-box{ 
+#main-wrapper .user-update-container .check-box {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-#main-wrapper .user-update-container .check-box .label { 
+#main-wrapper .user-update-container .check-box .label {
   color: var(--Lightmode-Grey2);
   font-size: 16px;
   font-weight: 400;
 }
 
-#main-wrapper .user-update-container .check-item-box { 
+#main-wrapper .user-update-container .check-item-box {
   display: flex;
   padding-bottom: 20px;
 }
 
-#main-wrapper .user-update-container .check-item { 
+#main-wrapper .user-update-container .check-item {
   flex: 1;
 
   display: flex;
@@ -164,7 +162,7 @@
   cursor: pointer;
 }
 
-#main-wrapper .user-update-container .check-item.active { 
+#main-wrapper .user-update-container .check-item.active {
   color: var(--Lightmode-Grey);
   font-weight: 700;
 

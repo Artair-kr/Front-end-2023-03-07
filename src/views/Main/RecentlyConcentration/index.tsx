@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from "react";
-import UserInfo from "../UserInfo";
-import { ACCESS_TOKEN, CONCENTRATION_TEST_ABSOLUTE_PATH } from "src/constants";
-import { useNavigate } from "react-router";
+import React, { useEffect, useState } from 'react'
+import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router';
+import { getRecentlyConcentrationRequest } from 'src/apis';
+import { ResponseDto } from 'src/apis/dto/response';
+import { GetRecentlyConcentrationResponseDto } from 'src/apis/dto/response/test';
+import { ACCESS_TOKEN, CONCENTRATION_TEST_ABSOLUTE_PATH } from 'src/constants';
+import { concentraionTest } from 'src/types/interfaces';
 
 import {
   Chart as ChartJS,
@@ -17,11 +21,8 @@ import {
 } from 'chart.js';
 
 import { Line } from 'react-chartjs-2';
-import { useCookies } from "react-cookie";
-import { getRecentlyConcentrationRequest } from "src/apis";
-import ConcentraitonTest from "src/types/interfaces/concentration-test.interface";
-import { GetRecentlyConcentrationResponseDto } from "src/apis/dto/response/test";
-import { ResponseDto } from "src/apis/dto/response";
+import Modal from 'src/components/Modal';
+import Way from 'src/components/Way';
 
 // description: ChartJS에서 사용할 요소 등록 //
 ChartJS.register(
@@ -35,13 +36,16 @@ ChartJS.register(
 );
 
 // component: 최근 집중력 검사 컴포넌트 //
-export default function RecentlyConcentration(){ 
+export default function RecentlyConcentration() {
 
   // state: cookie 상태 //
   const [cookies] = useCookies();
 
   // state: 집중력 검사 기록 리스트 상태 //
-  const [concentrationTests, setconcentrationTests] = useState<ConcentraitonTest[]>([]);
+  const [concentrationTests, setConcentrationTest] = useState<concentraionTest[]>([]);
+
+  // state: 모달 오픈 상태 //
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
   // variable: access token //
   const accessToken = cookies[ACCESS_TOKEN];
@@ -53,7 +57,7 @@ export default function RecentlyConcentration(){
       {
         label: '성공 점수',
         data: concentrationTests.map(test => test.measurementScore),
-        borderColor: 'rgba(0, 132, 255, 0.5)',
+        borderColor: 'rgba(0, 132, 255, 1)',
         backgroundColor: 'rgba(0, 132, 255, 0.5)'
       },
       {
@@ -61,57 +65,71 @@ export default function RecentlyConcentration(){
         data: concentrationTests.map(test => test.errorCount),
         borderColor: 'rgba(255, 84, 64, 1)',
         backgroundColor: 'rgba(255, 84, 64, 0.5)'
-      }
+      },
     ]
   };
-  
+
   // variable: 차트 옵션 //
   const chartOption: ChartOptions<'line'> = {
     responsive: false
   };
-
-  // fucntion: 네비게이터 함수 //
+  
+  // function: 네비게이터 함수 //
   const navigator = useNavigate();
 
   // function: get recently concentration response 처리 함수 //
-  const getRecentlyConcentrationResponse = ( responseBody:
-    GetRecentlyConcentrationResponseDto | ResponseDto | null ) => { 
+  const getRecentlyConcentrationResponse = (responseBody: GetRecentlyConcentrationResponseDto | ResponseDto | null) => {
     const message =
       !responseBody ? '서버에 문제가 있습니다.' :
-      responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : 
+      responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' :
       responseBody.code === 'AF' ? '인증에 실패했습니다.' : '';
+    
     const isSuccess = responseBody !== null && responseBody.code === 'SU';
-    if(!isSuccess){ 
+    if (!isSuccess) {
       alert(message);
       return;
     }
+
     const { concentrationTests } = responseBody as GetRecentlyConcentrationResponseDto;
-    setconcentrationTests(concentrationTests.reverse());
+    setConcentrationTest(concentrationTests.reverse());
+  };
+
+  // event handler: 방법 버튼 클릭 이벤트 처리 //
+  const onWayClickHandler = () => {
+    setModalOpen(!isModalOpen);
   };
 
   // event handler: 검사 버튼 클릭 이벤트 처리 //
-  const onTestClickHandler = () => { 
+  const onTestClickHandler = () => {
     navigator(CONCENTRATION_TEST_ABSOLUTE_PATH);
   };
 
-  useEffect(() => { 
-    if(!accessToken) return;
+  // effect: 컴포넌트 로드시 실행할 함수 //
+  useEffect(() => {
+    if (!accessToken) return;
     getRecentlyConcentrationRequest(accessToken).then(getRecentlyConcentrationResponse);
   }, []);
 
   // render: 최근 집중력 검사 컴포넌트 렌더링 //
-  return ( 
-      <div className='recently-container'>
-        <div className='recently-top'>
-          <div className='recently-title-box'>
-            <div className='title'>집중력 검사 기록</div>
-            <div className='info-button'>집중력을 높이는 방법<div className='icon' /></div>
+  return (
+    <div className='recently-container'>
+      <div className='recently-top'>
+        <div className='recently-title-box'>
+          <div className='title'>집중력 검사 기록</div>
+          <div className='info-button' onClick={onWayClickHandler}>
+            집중력을 높이는 방법<div className='icon' />
           </div>
-          <div className='button primary middle'>검사하러가기</div>
+          {isModalOpen &&
+          <Modal title='집중력을 높이는 방법' onClose={onWayClickHandler}>
+            <Way type='집중력' />
+          </Modal>
+          }
         </div>
-        <div className='recently-chart-box'>
-          <Line width={1132} height={300} data={chartData} options={chartOption} />
-        </div>
+        <div className='button primary middle' onClick={onTestClickHandler}>검사하러가기</div>
       </div>
+      <div className='recently-chart-box'>
+        <Line width={1132} height={300} data={chartData} options={chartOption} />
+      </div>
+    </div>
   )
 }

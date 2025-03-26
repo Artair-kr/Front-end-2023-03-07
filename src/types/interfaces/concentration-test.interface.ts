@@ -1,4 +1,5 @@
-export default interface ConcentraitonTest { 
+export default interface ConcentraitonTest {
+  measurementTime: any; 
   sequence: number;
   measurementScore: number;
   errorCount: number;

@@ -4,7 +4,7 @@ import { IdCheckRequestDto, SignInRequestDto, SignUpRequestDto } from './dto/req
 import { ResponseDto } from './dto/response';
 import { SignInResponseDto } from './dto/response/auth';
 import { PatchDiaryRequestDto, PostDiaryRequestDto } from './dto/request/diary';
-import { GetMyDiaryResponseDto } from './dto/response/diary';
+import { GetEmpathyResponseDto, GetMyDiaryResponseDto } from './dto/response/diary';
 import { PostConcentraitionRequestDto, PostMemoryRequestDto } from './dto/request/test';
 import { PostConcentrationResponseDto, GetMemoryResponseDto, GetRecentlyConcentrationResponseDto, GetRecentlyMemoryResponseDto } from './dto/response/test';
 import GetDiaryResponseDto from './dto/response/diary/get-diary.response.dto';
@@ -51,6 +51,9 @@ const GET_RECENTLY_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration/recentl
 
 const OPEN_AI_MODULE = `${API_DOMAIN}/api/v1/open-ai`;
 const GET_WAT_URL = `${OPEN_AI_MODULE}/way`;
+
+const PUT_EMPATHY_URL = (diaryNumber: number | string) => `${DIARY_MODULE_URL}/${diaryNumber}/empathy`;
+const GET_EMPATHY_URL = (diaryNumber: number | string) => `${DIARY_MODULE_URL}/${diaryNumber}/empathy`;
 
 const FILE_UPLOAD_URL = `${API_DOMAIN}/file/upload`;
 
@@ -125,6 +128,23 @@ export const getDiaryRequest = async (diaryNumber: number | string, accessToken:
 export const patchDiaryRequest = async (diaryNumber: number | string, requestBody: PatchDiaryRequestDto, accessToken: string) => {
   const responseBody = await axios.patch(PATCH_DIARY_URL(diaryNumber), requestBody, bearerAuthorization(accessToken))
     .then(responseSuccessHandler)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: put empathy API 요청 함수 //
+export const putEmpathyRequest = async (diaryNumber: number | string, accessToken: string) => { 
+  // 두번째 위치는 중괄호로  아무것도 안넘길수 있도록 설정 
+  const responseBody = await axios.put(PUT_EMPATHY_URL(diaryNumber), {}, bearerAuthorization(accessToken))
+    .then(responseSuccessHandler)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: get empathy API 요청 함수 //
+export const getEmpathyRequest = async (diaryNumber: number | string, accessToken: string) => { 
+  const responseBody = await axios.get(GET_EMPATHY_URL(diaryNumber), bearerAuthorization(accessToken))
+    .then(responseSuccessHandler<GetEmpathyResponseDto>)
     .catch(responseErrorHandler);
   return responseBody;
 };

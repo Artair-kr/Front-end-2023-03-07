@@ -52,7 +52,8 @@ export default function RecentlyMemory() {
       {
         label: '시간(초단위)',
         data: memoryTests.map(test => test.measurementTime),
-        borderColor: 'rgba(0, 132, 255, 0.5)'
+        borderColor: 'rgba(0, 132, 255, 0.5)',
+        backgroundColor: 'rgba(0, 132, 255, 0.5)'
       }
     ]
   };

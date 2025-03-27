@@ -59,3 +59,52 @@
     justify-content: end;
     gap: 20px;
 }
+
+#diary-detail-wrapper .sub-container { 
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+  
+#diary-detail-wrapper .sub-container .header { 
+    display: flex;
+    gap: 12px;
+}
+
+#diary-detail-wrapper .sub-container .sub-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    width: 60px;
+
+    color: var(--Lightmode-Grey4);
+
+    font-size: 16px;
+    font-weight: 500;
+}
+
+#diary-detail-wrapper .sub-container .icon { 
+    /* 아이콘 크기 */
+    width: 20px;
+    height: 20px;
+
+    background-size: 100% 100%;
+
+    cursor: pointer;
+}
+
+#diary-detail-wrapper .sub-container .icon.empathy{ 
+    background-image: url(src/assets/images/empathy.png);
+}
+
+
+#diary-detail-wrapper .sub-container .icon.empathy-empty{ 
+    background-image: url(src/assets/images/empathy-empty.png);
+}
+
+
+#diary-detail-wrapper .sub-container .icon.comment{ 
+    background-image: url(src/assets/images/comment.png);
+    cursor: default;
+}

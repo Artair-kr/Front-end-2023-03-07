@@ -3,8 +3,8 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { IdCheckRequestDto, SignInRequestDto, SignUpRequestDto } from './dto/request/auth';
 import { ResponseDto } from './dto/response';
 import { SignInResponseDto } from './dto/response/auth';
-import { PatchDiaryRequestDto, PostDiaryRequestDto } from './dto/request/diary';
-import { GetEmpathyResponseDto, GetMyDiaryResponseDto } from './dto/response/diary';
+import { PatchDiaryRequestDto, PostCommentRequestDto, PostDiaryRequestDto } from './dto/request/diary';
+import { GetCommentResponseDto, GetEmpathyResponseDto, GetMyDiaryResponseDto } from './dto/response/diary';
 import { PostConcentraitionRequestDto, PostMemoryRequestDto } from './dto/request/test';
 import { PostConcentrationResponseDto, GetMemoryResponseDto, GetRecentlyConcentrationResponseDto, GetRecentlyMemoryResponseDto } from './dto/response/test';
 import GetDiaryResponseDto from './dto/response/diary/get-diary.response.dto';
@@ -51,6 +51,9 @@ const GET_RECENTLY_CONCENTRATION_URL = `${TEST_MODULE_URL}/concentration/recentl
 
 const OPEN_AI_MODULE = `${API_DOMAIN}/api/v1/open-ai`;
 const GET_WAT_URL = `${OPEN_AI_MODULE}/way`;
+
+const POST_COMMENT_URL = (diaryNumber: number | string) => `${DIARY_MODULE_URL}/${diaryNumber}/comment`;
+const GET_COMMENT_URL = (diaryNumber: number | string) => `${DIARY_MODULE_URL}/${diaryNumber}/comment`;
 
 const PUT_EMPATHY_URL = (diaryNumber: number | string) => `${DIARY_MODULE_URL}/${diaryNumber}/empathy`;
 const GET_EMPATHY_URL = (diaryNumber: number | string) => `${DIARY_MODULE_URL}/${diaryNumber}/empathy`;
@@ -234,5 +237,21 @@ export const fileUploadRequest = async (requestBody: FormData) => {
   const responseBody = await axios.post(FILE_UPLOAD_URL, requestBody, multipartFormData)
     .then(responseSuccessHandler<string>)
     .catch(error => null);
+  return responseBody;
+};
+
+// function: post comment API 요청 함수 //
+export const postCommentRequest = async (requestBody: PostCommentRequestDto, diaryNumber: number | string, accessToken: string) => { 
+  const responseBody = await axios.post(POST_COMMENT_URL(diaryNumber), requestBody, bearerAuthorization(accessToken))
+    .then(responseSuccessHandler)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: get comment API 요청 함수 //
+export const getCommentRequest = async (diaryNumber: number | string, accessToken: string) => { 
+  const responseBody = await axios.get(GET_COMMENT_URL(diaryNumber), bearerAuthorization(accessToken))
+    .then(responseSuccessHandler<GetCommentResponseDto>)
+    .catch(responseErrorHandler);
   return responseBody;
 };

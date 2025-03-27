@@ -1,7 +1,9 @@
-import PatchDiaryRequestDto from "./patch-diary.reauest.dto";
-import PostDiaryRequestDto from "./post-diary.request";
+import PostDiaryRequestDto from './post-diary.request.dto'
+import PatchDiaryRequestDto from './patch-diary.reaquest.dto'
+import PostCommentRequestDto from './post-comment.request.dto';
 
 export type {
-    PostDiaryRequestDto,
-    PatchDiaryRequestDto
+  PostDiaryRequestDto,
+  PatchDiaryRequestDto,
+  PostCommentRequestDto
 }

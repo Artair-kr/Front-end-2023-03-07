@@ -10,6 +10,23 @@ import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInUserStore } from 'src/stores';
 import { GetEmpathyResponseDto } from 'src/apis/dto/response/diary';
 
+// component: 댓글 컴포넌트 //
+function Comment() { 
+
+  // render: 댓글 컴포넌트 렌더링 //
+  return ( 
+
+      <div className='comment-box'>
+        <div className='title-box'>
+          <div className='title'>qwer1234</div>
+          <div className='divider'></div>
+          <div className='write-date'>2025-03-27 09:33</div>
+        </div>
+        <div className='comment'>안녕하세요</div>
+      </div>
+  )
+}
+
 // component: 일기 상세 화면 컴포넌트 //
 export default function DiaryDetail() { 
 
@@ -229,8 +246,16 @@ export default function DiaryDetail() {
                     </div>
                     <div className='sub-box'>
                       <div className='icon comment' />
-                      0
                     </div>
+                  </div>
+                  <div className='body'>
+                    <Comment />
+                    <Comment />
+                    <Comment />
+                  </div>
+                  <div className='footer'>
+                    <textarea />
+                    <div className='button second stretch'>작성</div>
                   </div>
                 </div>
             </div>

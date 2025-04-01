@@ -48,7 +48,7 @@ function CommentItem({ commentItem }: CommentItemProps) {
       <div className='title-box'>
         <div className='title'>{commentWriterId}</div>
         <div className='divider'></div>
-        <div className='write-date'>{writeDateText} 전</div>
+        <div className='write-date'>{writeDateText} 전</div> 
       </div>
       <div className='comment'>{comment}</div>
     </div>
